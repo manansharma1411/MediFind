@@ -2,29 +2,29 @@
 
 > **Find Your Medicine. Find It Nearby.**
 
-MediFind is a full-stack, database-backed web application designed to help users search for medicines, compare real-time availability and prices across pharmacies, view interactive map locations with stock status pins, and place medicine reservation requests.
+MediFind is a full-stack, database-backed medicine discovery platform built with **React 18, Vite, Node.js, Express, PostgreSQL, and React Leaflet**. It enables users to search for medicines, compare real-time availability and prices across pharmacies in **Bhopal, Madhya Pradesh**, view interactive map locations with stock status pins, and submit medicine reservations.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- **🔍 Smart Medicine Search**: Search by medicine name, generic name, or brand name with case-insensitivity, partial matching, and fuzzy "Did You Mean?" typo suggestions.
-- **📍 Real-Time Pharmacy Availability**: View pharmacy stock counts, unit prices, open/closed statuses, and distance in kilometers centered around **Bhopal, Madhya Pradesh**.
-- **🗺️ Interactive Leaflet Map**: OpenStreetMap integration displaying pharmacy markers color-coded by live database stock:
+- **🔍 Smart Medicine Search**: Case-insensitive partial matching across brand, generic, and medicine names, with Levenshtein-based fuzzy *"Did You Mean?"* typo suggestions.
+- **📍 Pharmacy Stock Availability**: Real-time pharmacy stock counts, prices, open/closed indicators, and Haversine distance in km centered in Bhopal.
+- **🗺️ Interactive Leaflet Map**: OpenStreetMap tile layer with custom SVG markers color-coded by database stock status:
   - 🟢 **Green**: Available (`quantity > 10`)
   - 🟡 **Yellow**: Low Stock (`1 <= quantity <= 10`)
   - 🔴 **Red**: Out of Stock (`quantity = 0`)
-- **🛍️ Reservation Flow**: Place reservation requests with custom quantity, customer details, and instant cost calculations.
-- **⚙️ Admin Inventory Management**: Manage stock quantities and prices in real-time. Database updates automatically recalculate stock status and reflect across user search and map views.
-- **💾 Dual Database Engine**: Supports PostgreSQL or zero-config WASM SQLite with auto-initialization from relational `schema.sql` and `seed.sql`.
+- **🛍️ Reservation & Stock Safety**: Submit medicine reservation requests with instant price calculations. Admin acceptance automatically deducts stock from inventory and updates availability.
+- **🔐 Admin Portal & Authentication**: Secure JWT-authenticated Admin Dashboard (`/login` & `/admin`) with analytics summary cards, inventory quantity/price editing, and reservation fulfillment controls.
+- **☁️ Vercel & PostgreSQL Ready**: Configured for single-project deployment on Vercel with Vercel Serverless Functions (`api/index.js`) and hosted PostgreSQL (Neon / Supabase / Vercel Postgres).
 
 ---
 
-## 🏗️ Technology Stack
+## 🔐 Demo Credentials
 
-- **Frontend**: React 18, Vite 5, Tailwind CSS 3, Lucide Icons, React Leaflet, OpenStreetMap, Axios, React Router DOM 6
-- **Backend**: Node.js, Express, REST APIs, SQL.js (WASM SQLite) / PostgreSQL (`pg`)
-- **Database**: Relational SQL Schema (`database/schema.sql`) and Bhopal Seed Data (`database/seed.sql`)
+- **Admin Login Page**: `/login`
+- **Email**: `admin@medifind.com`
+- **Password**: `admin123`
 
 ---
 
@@ -33,60 +33,39 @@ MediFind is a full-stack, database-backed web application designed to help users
 ### Prerequisites
 - Node.js (v18+) & npm
 
-### 1. Clone & Setup
+### 1. Installation & Seeding
 ```bash
-git clone <your-repository-url>
-cd medifind
+# Clone the repository
+git clone https://github.com/manansharma1411/MediFind.git
+cd MediFind
+
+# Install dependencies and seed database
+npm run seed
 ```
 
-### 2. Start Backend API Server
+### 2. Run Local Development (Concurrent Backend & Frontend)
 ```bash
-cd backend
-npm install
-npm start
-```
-*Backend runs on `http://localhost:5000`*
+# Terminal 1: Backend API (Port 5000)
+npm run dev:backend
 
-### 3. Start Frontend Web Application
-```bash
-cd frontend
-npm install
-npm run dev
+# Terminal 2: Frontend App (Port 3000)
+npm run dev:frontend
 ```
-*Frontend runs on `http://localhost:3000`*
+*Open `http://localhost:3000` in your browser.*
 
 ---
 
-## 📚 Project Structure
+## 📚 Technical Documentation
 
-```text
-├── backend/
-│   ├── src/
-│   │   ├── config/db.js          # Unified DB driver (PostgreSQL / WASM SQLite)
-│   │   ├── controllers/          # Search, Pharmacy, Inventory, Reservation logic
-│   │   ├── routes/               # Express API endpoints
-│   │   ├── utils/                # Stock status engine, Haversine distance, Levenshtein search
-│   │   └── server.js
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/           # Navbar, SearchBar, PharmacyMap, ReservationModal, StockBadge
-│   │   ├── pages/                # HomePage, MedicineDetailsPage, AdminDashboardPage
-│   │   ├── services/api.js       # Axios HTTP service
-│   │   └── App.jsx
-│   └── package.json
-├── database/
-│   ├── schema.sql                # Relational DB schema
-│   └── seed.sql                  # Bhopal demonstration seed data
-├── docs/                         # Technical documentation (API, DB, Architecture, Integration)
-└── README.md
-```
-
----
-
-## 📝 Documentation
-For detailed technical guides, explore the `docs/` folder:
+Explore the `docs/` folder for detailed guides:
 - [API Reference](docs/API.md)
-- [Database Schema & Stock Rules](docs/DATABASE.md)
+- [Database Schema & Constraints](docs/DATABASE.md)
 - [System Architecture](docs/ARCHITECTURE.md)
-- [Integration Guide](docs/INTEGRATION.md)
+- [Vercel Deployment Guide](docs/DEPLOYMENT.md)
+- [Presentation Demo Walkthrough](docs/DEMO_FLOW.md)
+- [Troubleshooting & FAQ](docs/TROUBLESHOOTING.md)
+
+---
+
+## ⚕️ Medical Disclaimer
+*MediFind is an availability discovery platform prototype for university exhibition demonstration. It does not provide medical diagnosis, treatment, or prescribing advice.*

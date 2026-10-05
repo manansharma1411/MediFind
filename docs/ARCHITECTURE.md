@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-MediFind is designed as a **cohesive full-stack monolithic prototype** optimized for single-developer development, testing, and university exhibition demonstration.
+MediFind is structured as a **cohesive full-stack monolithic application** designed for single-developer maintainability, high performance, and zero-headache deployment on **Vercel**.
 
 ```text
 +-----------------------------------------------------------------------+
@@ -11,18 +11,20 @@ MediFind is designed as a **cohesive full-stack monolithic prototype** optimized
 |      React Leaflet (OpenStreetMap) • Axios HTTP • Lucide Icons       |
 +-----------------------------------------------------------------------+
                                    │
-                           REST API Calls
+                           Relative API Requests (/api/*)
                                    │
                                    ▼
 +-----------------------------------------------------------------------+
-|                            BACKEND SERVER                             |
-|                       Node.js + Express REST API                      |
+|                    VERCEL SERVERLESS FUNCTION LAYER                   |
+|                        api/index.js (Express)                         |
+|  - JWT Authentication & Bcrypt Password Verification                  |
 |  - Medicine & Fuzzy Search Engine (Levenshtein Distance)              |
 |  - Stock Status Calculation Engine                                    |
-|  - Distance Calculation (Haversine Formula for Bhopal Coordinates)   |
+|  - Haversine Distance Calculator (Bhopal Coordinates)                 |
+|  - Transactional Reservation Fulfillments & Stock Deductions          |
 +-----------------------------------------------------------------------+
                                    │
-                             Database Query
+                           Database Connections
                                    │
                                    ▼
 +-----------------------------------------------------------------------+
@@ -32,15 +34,17 @@ MediFind is designed as a **cohesive full-stack monolithic prototype** optimized
 +-----------------------------------------------------------------------+
 ```
 
-## Why a Monolithic Architecture was Selected
-1. **Single-Developer Efficiency**: Eliminates cross-repository overhead, service discovery complexities, and inter-service authentication boilerplate.
-2. **Exhibition Demonstration Speed**: Allows instant local setup (`npm start` in backend and `npm run dev` in frontend) with 100% offline demonstration reliability.
-3. **Database Integrity**: PostgreSQL / SQLite acts as the single source of truth for stock quantities and availability recalculation.
+## Vercel Serverless Function Design
+- **Single Handler Routing**: `vercel.json` rewrites all `/api/(.*)` HTTP requests to `api/index.js`.
+- **Stateless & Database-Backed**: Serverless functions do not rely on local filesystem state; PostgreSQL (`DATABASE_URL`) acts as the single persistent source of truth.
+- **Local Development Dual Mode**: During local development (`npm run dev`), Express runs on port 5000 and Vite proxies `/api` requests seamlessly.
 
-## Data Flow for Admin Inventory Update
-1. Admin navigates to `/admin` and changes item quantity from 5 to 0.
-2. Admin clicks "Save to DB", triggering `PUT /api/inventory/:id`.
-3. Express server calculates `calculateStockStatus(0)` -> returns `'out_of_stock'`.
-4. SQL `UPDATE inventory SET quantity = 0, availability = 'out_of_stock' WHERE id = :id` is executed and saved to database disk.
-5. User returns to medicine availability view `/medicines/:id` and re-fetches data.
-6. Updated stock status badge ("Out of Stock") and red map pin are displayed immediately from the database response.
+## Transactional Reservation Fulfillment & Stock Logic
+1. **User Reservation Request**: `POST /api/reservations` validates requested quantity <= available stock and creates a `pending` reservation.
+2. **Admin Review & Acceptance**: Admin clicks **Accept** on `/api/reservations/:id/status`.
+3. **Database Transaction**:
+   - Checks current inventory stock (`inventory.quantity`).
+   - Deducts requested quantity (`newQty = inventory.quantity - reservation.quantity`).
+   - Recalculates stock status (`calculateStockStatus(newQty)` → `available`, `low_stock`, or `out_of_stock`).
+   - Updates `inventory` table in PostgreSQL.
+   - Updates reservation status to `accepted`.

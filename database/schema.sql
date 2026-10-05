@@ -1,5 +1,15 @@
 -- MediFind Database Schema (PostgreSQL & SQLite compatible)
 
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS medicines (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
@@ -53,8 +63,10 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 
 -- Indexes for fast searching & foreign key lookups
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_medicines_name ON medicines(name);
 CREATE INDEX IF NOT EXISTS idx_medicines_generic ON medicines(generic_name);
 CREATE INDEX IF NOT EXISTS idx_medicines_brand ON medicines(brand_name);
 CREATE INDEX IF NOT EXISTS idx_inventory_medicine ON inventory(medicine_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_pharmacy ON inventory(pharmacy_id);
+CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status);

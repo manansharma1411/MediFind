@@ -9,6 +9,26 @@ const api = axios.create({
   }
 });
 
+// Interceptor to attach JWT token to outgoing requests if logged in
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('medifind_admin_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const authApi = {
+  login: async (email, password) => {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
+  },
+  me: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  }
+};
+
 export const medicineApi = {
   search: async (query = '') => {
     const response = await api.get('/medicines', { params: { q: query } });
@@ -41,7 +61,7 @@ export const inventoryApi = {
     return response.data;
   },
   update: async (id, payload) => {
-    const response = await api.put(`/inventory/${id}`, payload);
+    const response = await api.put(`/admin/inventory/${id}`, payload);
     return response.data;
   }
 };
@@ -51,8 +71,23 @@ export const reservationApi = {
     const response = await api.post('/reservations', payload);
     return response.data;
   },
+  getById: async (id) => {
+    const response = await api.get(`/reservations/${id}`);
+    return response.data;
+  },
   getAll: async () => {
     const response = await api.get('/reservations');
+    return response.data;
+  },
+  updateStatus: async (id, status) => {
+    const response = await api.put(`/reservations/${id}/status`, { status });
+    return response.data;
+  }
+};
+
+export const adminApi = {
+  getStats: async () => {
+    const response = await api.get('/admin/stats');
     return response.data;
   }
 };

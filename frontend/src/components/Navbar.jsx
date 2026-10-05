@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Pill, MapPin, LayoutDashboard, Search } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Pill, MapPin, LayoutDashboard, Search, LogIn, LogOut, UserCheck } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const isActive = (path) => location.pathname === path;
 
@@ -43,17 +46,40 @@ export default function Navbar() {
               <span>Search</span>
             </Link>
 
-            <Link
-              to="/admin"
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                isActive('/admin')
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Admin Dashboard</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/admin"
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Admin Dashboard</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  isActive('/login')
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Admin Login</span>
+              </Link>
+            )}
           </nav>
         </div>
       </div>

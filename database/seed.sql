@@ -4,9 +4,11 @@ DELETE FROM reservations;
 DELETE FROM inventory;
 DELETE FROM pharmacies;
 DELETE FROM medicines;
+DELETE FROM users;
 
--- Reset Auto-increment sequence if supported
--- SQLite & PostgreSQL friendly INSERTs
+-- Seed Admin User (Password: admin123)
+INSERT INTO users (id, name, email, password_hash, role) VALUES
+(1, 'System Administrator', 'admin@medifind.com', '$2a$10$Zt0w3Xh9d1W0k.m8J1h6O.4Jq6zZ9l3v8k1m5n7p9q1r3s5t7u9v1', 'admin');
 
 INSERT INTO medicines (id, name, generic_name, brand_name, strength, form, description) VALUES
 (1, 'Crocin 650', 'Paracetamol', 'Crocin', '650 mg', 'Tablet', 'Fast-acting fever reducer and mild-to-moderate pain reliever.'),

@@ -16,9 +16,30 @@ async function initDatabase() {
       const { Pool } = require('pg');
       pgPool = new Pool({
         connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
       });
       isPg = true;
       console.log('Connected to PostgreSQL database via DATABASE_URL');
+      
+      // Run schema if tables don't exist in PostgreSQL
+      if (fs.existsSync(schemaPath)) {
+        const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+        // Simple PG table check
+        const tableCheck = await pgPool.query("SELECT to_regclass('public.users') as exists");
+        if (!tableCheck.rows[0].exists) {
+          console.log('Initializing PostgreSQL schema...');
+          // Convert SQLite AUTOINCREMENT to SERIAL for PostgreSQL if needed
+          let pgSchema = schemaSql
+            .replace(/INTEGER PRIMARY KEY AUTOINCREMENT/g, 'SERIAL PRIMARY KEY')
+            .replace(/REAL/g, 'DOUBLE PRECISION');
+          await pgPool.query(pgSchema);
+          if (fs.existsSync(seedPath)) {
+            const seedSql = fs.readFileSync(seedPath, 'utf8');
+            await pgPool.query(seedSql);
+          }
+          console.log('PostgreSQL schema and seed data initialized.');
+        }
+      }
       return;
     } catch (err) {
       console.warn('PostgreSQL connection attempt failed, falling back to SQLite (WASM):', err.message);
@@ -40,19 +61,19 @@ async function initDatabase() {
     console.log(`Created new SQLite database in memory`);
   }
 
-  // Check if tables exist
-  let hasTables = false;
+  // Check if users and medicines tables exist
+  let hasUsersTable = false;
   try {
-    const res = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='medicines'");
+    const res = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
     if (res.length > 0 && res[0].values.length > 0) {
-      hasTables = true;
+      hasUsersTable = true;
     }
   } catch (e) {
-    hasTables = false;
+    hasUsersTable = false;
   }
 
-  if (!hasTables) {
-    console.log('Initializing database schema and seed data...');
+  if (!hasUsersTable) {
+    console.log('Initializing/Updating SQLite schema and seed data...');
     if (fs.existsSync(schemaPath)) {
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
       db.exec(schemaSql);
@@ -75,20 +96,6 @@ function saveDatabaseToDisk() {
   } catch (err) {
     console.error('Error saving SQLite database to disk:', err.message);
   }
-}
-
-// Helper to convert SQL.js result array to object array
-function formatSqlJsResults(res) {
-  if (!res || res.length === 0) return [];
-  const columns = res[0].columns;
-  const values = res[0].values;
-  return values.map(row => {
-    const obj = {};
-    columns.forEach((col, idx) => {
-      obj[col] = row[idx];
-    });
-    return obj;
-  });
 }
 
 // Unified query wrapper
