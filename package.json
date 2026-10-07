@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "MediFind — Medicine Availability Finder Monorepo",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev:backend": "cd backend && npm start",
-    "dev:frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
     "seed": "node database/seeder.js",
-    "start": "cd backend && npm start"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+    "start": "npm start --workspace=backend"
+  }
 }
