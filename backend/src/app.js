@@ -13,16 +13,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/medicines', medicineRoutes);
-app.use('/api/pharmacies', pharmacyRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/reservations', reservationRoutes);
-app.use('/api/admin', adminRoutes);
+// Dual route binding for Vercel Serverless Function & local Express server
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/medicines', '/medicines'], medicineRoutes);
+app.use(['/api/pharmacies', '/pharmacies'], pharmacyRoutes);
+app.use(['/api/inventory', '/inventory'], inventoryRoutes);
+app.use(['/api/reservations', '/reservations'], reservationRoutes);
+app.use(['/api/admin', '/admin'], adminRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'ok',
     message: 'MediFind API Server is running smoothly.',

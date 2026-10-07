@@ -1,12 +1,12 @@
 const app = require('../backend/src/app');
 const { initDatabase } = require('../backend/src/config/db');
 
-let dbInitialized = false;
+let dbPromise = null;
 
 module.exports = async (req, res) => {
-  if (!dbInitialized) {
-    await initDatabase();
-    dbInitialized = true;
+  if (!dbPromise) {
+    dbPromise = initDatabase();
   }
+  await dbPromise;
   return app(req, res);
 };
