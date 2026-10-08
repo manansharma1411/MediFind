@@ -19,10 +19,10 @@ INSERT INTO medicines (id, name, generic_name, brand_name, strength, form, descr
 (6, 'Allegra 120', 'Fexofenadine Hydrochloride', 'Allegra', '120 mg', 'Tablet', 'Second-generation antihistamine for seasonal allergy symptoms.');
 
 INSERT INTO pharmacies (id, name, address, city, state, postal_code, latitude, longitude, is_open, phone) VALUES
-(1, 'Apollo Pharmacy - MP Nagar', 'Plot 12, Zone I, Maharana Pratap Nagar', 'Bhopal', 'Madhya Pradesh', '462011', 23.2332, 77.4343, 1, '+91 755 2551234'),
-(2, 'Sharma Medicos - Arera Colony', 'E-5/112, Arera Colony, Near Bittan Market', 'Bhopal', 'Madhya Pradesh', '462016', 23.2156, 77.4305, 1, '+91 755 2778899'),
-(3, 'Sanjivani Medical Store - New Market', 'Shop 45, TT Nagar, Main New Market', 'Bhopal', 'Madhya Pradesh', '462003', 23.2376, 77.4010, 1, '+91 755 2559988'),
-(4, 'Care & Cure Pharmacy - Kolar Road', 'Main Road, Kolar Road, Near Bairagarh Chichali', 'Bhopal', 'Madhya Pradesh', '462042', 23.1890, 77.4190, 0, '+91 755 2894455');
+(1, 'Apollo Pharmacy - MP Nagar', 'Plot 12, Zone I, Maharana Pratap Nagar', 'Bhopal', 'Madhya Pradesh', '462011', 23.2332, 77.4343, TRUE, '+91 755 2551234'),
+(2, 'Sharma Medicos - Arera Colony', 'E-5/112, Arera Colony, Near Bittan Market', 'Bhopal', 'Madhya Pradesh', '462016', 23.2156, 77.4305, TRUE, '+91 755 2778899'),
+(3, 'Sanjivani Medical Store - New Market', 'Shop 45, TT Nagar, Main New Market', 'Bhopal', 'Madhya Pradesh', '462003', 23.2376, 77.4010, TRUE, '+91 755 2559988'),
+(4, 'Care & Cure Pharmacy - Kolar Road', 'Main Road, Kolar Road, Near Bairagarh Chichali', 'Bhopal', 'Madhya Pradesh', '462042', 23.1890, 77.4190, FALSE, '+91 755 2894455');
 
 INSERT INTO inventory (id, medicine_id, pharmacy_id, quantity, price, availability) VALUES
 (1, 1, 1, 25, 32.50, 'available'),
